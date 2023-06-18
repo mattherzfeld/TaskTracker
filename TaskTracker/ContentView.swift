@@ -8,14 +8,41 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var taskApp = TaskViewModel()
+    @State var task = TaskModel(title: "", taskdata: "")
+    // @State
+    // @ObservedObject
+    // @StateObject
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                ForEach($taskApp.tasks) { $task in
+                    NavigationLink {
+                        TaskDetail(task: $task)
+                    } label : {
+                        Text(task.title)
+                    }
+                }
+                Section {
+                    NavigationLink {
+                        TaskDetail(task: $task)
+                    } label : {
+                        Text("New Task")
+                            .foregroundColor(Color.gray)
+                            .font(.system(size: 15))
+                    }
+                    
+                }
+            }
+            .onAppear {
+                taskApp.fetchData()
+            }
+            .refreshable {
+                taskApp.fetchData()
+            }
         }
-        .padding()
     }
 }
 
